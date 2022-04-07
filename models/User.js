@@ -19,10 +19,27 @@ const userSchema = new Schema({
         },
     },
     // _ids - references thought model
-    thoughts:[],
+    thoughts:[{type: Schema.Types.ObjectId, ref: 'thought'}],
 
     // _ids - references the user model
-    friends:[]
+    friends:[{type: Schema.Types.ObjectId, ref:'user'}]
 })
 
 // Virtual friendCount
+userSchema.virtual('friendCount')
+.get(function(){
+    return this.friends.length
+})
+
+
+// 
+// 
+// 
+// Do I need a set?
+// .set(function(v){
+
+// })
+
+const User = model('user',userSchema)
+
+module.exports = User;
