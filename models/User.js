@@ -26,6 +26,8 @@ const userSchema = new Schema({
 },
 {
     toJSON:{
+
+        // Displays virtuals in the JSON object
         virtuals:true
     },
     id:false
@@ -38,13 +40,6 @@ userSchema.virtual('friendCount')
     return this.friends.length
 })
 
-// 
-// 
-// 
-// Do I need a set?
-// .set(function(v){
-
-// })
 
 const User = model('user',userSchema)
 

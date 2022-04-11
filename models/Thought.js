@@ -1,5 +1,6 @@
 const { Schema,model } = require('mongoose');
-const reactionSchema = require('./Reaction')
+const reactionSchema = require('./Reaction');
+const formatDate = require('../utils/helper');
 
 const thoughtSchema = new Schema({
     thoughtText:{
@@ -13,19 +14,21 @@ const thoughtSchema = new Schema({
         type: Date,
         default: Date.now,
         get(v){
-            let hour = v.getHours();
-            let timeOfDay;
-            if(hour>12){
-              hour-=12
-              timeOfDay = 'PM'
-            } else {
-              timeOfDay = 'AM'
-            }
+            return formatDate(v)
+            // Gets hour and sets AM or PM
+            // let hour = v.getHours();
+            // let timeOfDay;
+            // if(hour>12){
+            //   hour-=12
+            //   timeOfDay = 'PM'
+            // } else {
+            //   timeOfDay = 'AM'
+            // }
             
-            return `${hour}:${v.getMinutes()}${timeOfDay} on ${v.getMonth() + 1}/${v.getDate()}/${v.getFullYear()}`
+            // // Formats current time and date
+            // return `${hour}:${v.getMinutes()}${timeOfDay} on ${v.getMonth() + 1}/${v.getDate()}/${v.getFullYear()}`
         }
     },
-    // default: () => new Date(+new Date() + 84 * 24 * 60 * 60 * 1000),
 
     username:{
         type: String,
@@ -36,6 +39,7 @@ const thoughtSchema = new Schema({
 },
 {
     toJSON:{
+        // Virtual and get method displayed in JSON object
         virtuals:true,
         getters:true
     },
@@ -49,14 +53,6 @@ thoughtSchema.virtual('reactionCount')
     return this.reactions.length
 })
 
-
-// 
-// 
-// 
-// Do I need a set?
-// .set(function(v){
-
-// })
 
 const Thought = model('thought',thoughtSchema)
 

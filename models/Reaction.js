@@ -1,11 +1,11 @@
-const { Schema, ObjectId } = require('mongoose');
+const { Schema,ObjectId } = require('mongoose');
+const formatDate = require('../utils/helper');
 
 const reactionSchema = new Schema({
-    _Id:{
+    reactionId:{
         type: ObjectId,
         default: () => new Types.ObjectId(),
-        //use Mongoose ObjectId data type
-        // Default set to new object id
+        
     },
 
     reactionBody:{
@@ -23,9 +23,13 @@ const reactionSchema = new Schema({
         type:Date,
         default:Date.now,
         get(v){
-            return // formatted date
+            return formatDate(v)
         }
     },
+},{
+    toJSON:{
+        getters:true
+    }
 })
 
 

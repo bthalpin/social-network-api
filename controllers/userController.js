@@ -1,46 +1,72 @@
-const { User } = require('../models');
+const { User,Thought } = require('../models');
 const { ObjectId } = require('mongoose').Types;
 
 module.exports = {
+
     getUsers (req,res) {
         // all users
         User.find()
+            .select('-__v')
+            .populate('friends')
+            .populate('thoughts')
             .then(users => res.json(users))
             .catch(err => res.status(500).json(err))
     },
+
     getSingleUser (req,res) {
         // Single user by id
         User.findOne({_id: ObjectId(req.params.id)})
-        .select('-__v')
-        .then(user => 
-            !user
-                ? res.status(404).json({ message: 'No matching user with that ID' })
-                : res.json(user)
-        )
-        .catch(err => res.status(500).json(err))
+            .select('-__v')
+            .populate('thoughts')
+            .populate('friends')
+            .then(user => 
+                !user
+                    ? res.status(404).json({ message: 'No matching user with that ID' })
+                    : res.json(user)
+            )
+            .catch(err => res.status(500).json(err))
     },
+
     createUser (req,res) {
         // create new user
         User.create(req.body)
             .then(userData => res.json(userData))
             .catch(err => res.status(500).json(err))
     },
+
     updateUser (req,res) {
         // edit user by id
-        User.findOneAndUpdate({_id: ObjectId(req.params.id)},
+        User.findOneAndUpdate(
+            {_id: ObjectId(req.params.id)},
             { $set: req.body },
             { new:true }
             )
+            .select('-__v')
             .then(data => res.json(data))
+            .catch(err => res.status(500).json(err))
+
     },
+
     deleteUser (req,res) {
         // delete user by id
         User.findOneAndDelete({_id: ObjectId(req.params.id)})
-            .then(data => res.json(`${data.username} was deleted`))
-    },
-    addFriend (req,res)  {
-        console.log(req.params)
+            .then(deleted => 
+                !deleted
+                    ? res.status(404).json({ message: 'Error deleting user' })
 
+                    // delete thoughts created by user
+                    : Thought.deleteMany({username:deleted.username}))
+                    .then( deleted=> {
+                        !deleted
+                            ? res.status(404).json({ message: 'User deleted, Error deleting associated thoughts' })
+                            :res.json(`User deleted`)})
+            .catch(err => res.status(500).json(err))
+
+    },
+
+    addFriend (req,res)  {
+
+        // Add user id to friends array
         User.findOneAndUpdate(
             { _id: ObjectId(req.params.userId) },
             { $push: { friends: req.params.friendId } },
@@ -48,27 +74,25 @@ module.exports = {
             )
             .then(friend => 
                 !friend
-                            ? res.status(404).json({
-                                message: 'Error adding friend',
-                            })
-                            : res.json({ message: `${friend} Friend added`})
+                    ? res.status(404).json({ message: 'Error adding friend' })
+                    : res.json({ message: `${friend} Friend added`})
                     )
             .catch(err => res.status(500).json(err))
     },
+
+
     removeFriend (req,res) {
-        console.log(req.params)
+        
+        // Remove userId from friend array
         User.findOneAndUpdate(
             { _id: ObjectId(req.params.userId) },
             { $pull: {friends:ObjectId(req.params.friendId) } },
             { new: true },
-            // (err,result)=>err?console.log(err):console.log(result)
             )
             .then(friend => 
                 !friend
-                            ? res.status(404).json({
-                                message: 'Error deleting friend',
-                            })
-                            : res.json({ message: `Friend removed`})
+                    ? res.status(404).json({ message: 'Error deleting friend' })
+                    : res.json({ message: `Friend removed`})
                     )
             .catch(err => res.status(500).json(err))
     }
