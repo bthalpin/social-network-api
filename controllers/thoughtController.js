@@ -52,5 +52,37 @@ module.exports = {
         // delete user by id
         Thought.findOneAndDelete({_id: ObjectId(req.params.id)})
             .then(data => res.json(`Thought with the message '${data.thoughtText}' was deleted`))
+    },
+    addReaction (req,res) {
+        Thought.findOneAndUpdate(
+            { _id: ObjectId(req.params.thoughtId) },
+            { $push: { reactions: req.body } },
+            { new: true }
+            )
+            .then(reaction => 
+                !reaction
+                            ? res.status(404).json({
+                                message: 'Error adding reaction',
+                            })
+                            : res.json({ message: `Reaction added`})
+                    )
+            .catch(err => res.status(500).json(err))
+    },
+    deleteReaction (req,res){
+        console.log(req.params.reactionId)
+        Thought.findOneAndUpdate(
+            { _id: ObjectId(req.params.thoughtId) },
+            { $pull: {reactions:{_id: req.params.reactionId }} },
+            { new: true }
+            // (err,result)=>err?console.log(err):console.log(result)
+            )
+            .then(reaction => 
+                !reaction
+                            ? res.status(404).json({
+                                message: 'Error deleting reaction',
+                            })
+                            : res.json({ message: `'${reaction}' - reaction removed`})
+                    )
+            .catch(err => res.status(500).json(err))
     }
 }

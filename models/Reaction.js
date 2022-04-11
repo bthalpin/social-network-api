@@ -1,15 +1,17 @@
 const { Schema, ObjectId } = require('mongoose');
 
 const reactionSchema = new Schema({
-    reactionId:{
-        type: ObjectId,//use Mongoose ObjectId data type
+    _Id:{
+        type: ObjectId,
+        default: () => new Types.ObjectId(),
+        //use Mongoose ObjectId data type
         // Default set to new object id
     },
 
     reactionBody:{
         type:String,
         required:true,
-        maxlength:280,
+        maxLength:280,
     },
 
     username:{
