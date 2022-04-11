@@ -13,9 +13,19 @@ const thoughtSchema = new Schema({
         type: Date,
         default: Date.now,
         get(v){
-            return // formatted date
+            let hour = v.getHours();
+            let timeOfDay;
+            if(hour>12){
+              hour-=12
+              timeOfDay = 'PM'
+            } else {
+              timeOfDay = 'AM'
+            }
+            
+            return `${hour}:${v.getMinutes()}${timeOfDay} on ${v.getMonth() + 1}/${v.getDate()}/${v.getFullYear()}`
         }
     },
+    // default: () => new Date(+new Date() + 84 * 24 * 60 * 60 * 1000),
 
     username:{
         type: String,
@@ -23,7 +33,15 @@ const thoughtSchema = new Schema({
     },
     
     reactions:[reactionSchema],
-})
+},
+{
+    toJSON:{
+        virtuals:true,
+        getters:true
+    },
+    id:false
+}
+)
 
 // Virtual friendCount
 thoughtSchema.virtual('reactionCount')

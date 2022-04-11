@@ -37,5 +37,39 @@ module.exports = {
         // delete user by id
         User.findOneAndDelete({_id: ObjectId(req.params.id)})
             .then(data => res.json(`${data.username} was deleted`))
+    },
+    addFriend (req,res)  {
+        console.log(req.params)
+
+        User.findOneAndUpdate(
+            { _id: ObjectId(req.params.userId) },
+            { $push: { friends: req.params.friendId } },
+            { new: true }
+            )
+            .then(friend => 
+                !friend
+                            ? res.status(404).json({
+                                message: 'Error adding friend',
+                            })
+                            : res.json({ message: `${friend} Friend added`})
+                    )
+            .catch(err => res.status(500).json(err))
+    },
+    removeFriend (req,res) {
+        console.log(req.params)
+        User.findOneAndUpdate(
+            { _id: ObjectId(req.params.userId) },
+            { $pull: {friends:ObjectId(req.params.friendId) } },
+            { new: true },
+            // (err,result)=>err?console.log(err):console.log(result)
+            )
+            .then(friend => 
+                !friend
+                            ? res.status(404).json({
+                                message: 'Error deleting friend',
+                            })
+                            : res.json({ message: `Friend removed`})
+                    )
+            .catch(err => res.status(500).json(err))
     }
 }
