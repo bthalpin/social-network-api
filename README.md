@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
-Social Network API is an api to be used when creating a social network app.  It allows a user to be created.  Each user can have a list of thoughts, and each thought can have a list of reactions.  A user can also add another user to their list of friends.  The API allows for creating, deleting, and editting of users, thoughts, and reactions.
+Social Network API is an api to be used when creating a social network app.  It allows a user to be created.  Each user can have a list of thoughts, and each thought can have a list of reactions.  A user can also add another user to their list of friends.  The API allows for creating, deleting, and editing of users, thoughts, and reactions.
 
 ## Table of Contents
 

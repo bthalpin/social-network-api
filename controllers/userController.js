@@ -48,18 +48,31 @@ module.exports = {
     },
 
     deleteUser (req,res) {
+        let username;
         // delete user by id
         User.findOneAndDelete({_id: ObjectId(req.params.id)})
-            .then(deleted => 
-                !deleted
+            .then(deleted => {
+                username = deleted.username
+                return !deleted
                     ? res.status(404).json({ message: 'Error deleting user' })
 
                     // delete thoughts created by user
-                    : Thought.deleteMany({username:deleted.username}))
-                    .then( deleted=> {
+                    :Thought.deleteMany({username:username})})
+                    .then( deleted=> 
                         !deleted
                             ? res.status(404).json({ message: 'User deleted, Error deleting associated thoughts' })
-                            :res.json(`User deleted`)})
+
+                            // delete reactions created by user
+                            :Thought.updateMany(
+                                {} ,
+                                { $pull: {reactions:{username: username }} },
+                                { new: true }
+                                ))
+                                .then(reaction => 
+                                    !reaction
+                                        ? res.status(404).json({ message: 'User and associated thoughts deleted.  Error deleting reactions' })
+                                        : res.json({ message: `${username} was deleted`})
+                                        )
             .catch(err => res.status(500).json(err))
 
     },
@@ -75,7 +88,7 @@ module.exports = {
             .then(friend => 
                 !friend
                     ? res.status(404).json({ message: 'Error adding friend' })
-                    : res.json({ message: `${friend} Friend added`})
+                    : res.json({ message: `Friend added`})
                     )
             .catch(err => res.status(500).json(err))
     },
