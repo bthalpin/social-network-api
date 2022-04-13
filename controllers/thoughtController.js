@@ -39,7 +39,7 @@ module.exports = {
                             ? res.status(404).json({
                                 message: 'Error updating user',
                             })
-                            : res.json({ message: `Thought created`})
+                            : res.json({ message: `Thought created and added to ${user.username}'s thoughts`})
                     })
             .catch(err => res.status(500).json(err)))
     },
@@ -63,14 +63,14 @@ module.exports = {
                 // deletes thought out of user thoughts array
                 : User.findOneAndUpdate(
                     { username: deleted.username},
-                    { $pull: {thoughts: {_id:ObjectId(req.params.id)}}}
+                    { $pull: {thoughts:ObjectId(req.params.id)}}
                 )
                 .then(user => {
                     !user
                         ? res.status(404).json({
                             message: 'Thought deleted, Error deleting from user thoughts',
                         })
-                        : res.json({ message: `Thought deleted`})
+                        : res.json({ message: `Thought created by ${user.username} was deleted`})
                 }))
     },
 
@@ -95,7 +95,6 @@ module.exports = {
         Thought.findOneAndUpdate(
             { _id: ObjectId(req.params.thoughtId) },
             { $pull: {reactions:{reactionId: ObjectId(req.params.reactionId) }} },
-            // { new: true }
             )
             .then(reaction => 
                 !reaction

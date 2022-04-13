@@ -1,5 +1,5 @@
 {
-  "name": "social-network-api",
+  "name": "Social Network API",
   "version": "1.0.0",
   "description": "Social Network API is an api to be used when creating a social network app.  It allows a user to be created.  Each user can have a list of thoughts, and each thought can have a list of reactions.  A user can also add another user to their list of friends.  The API allows for creating, deleting, and editing of users, thoughts, and reactions.",
   "main": "server.js",
